@@ -1,10 +1,16 @@
-# US_Election_Tweet_Analytics
+#### US_Election_Tweet_Analytics
 Sentiment analysis on Tweets related to US Election and classifying them as Pro-Hillary pro-Trump or neutral
+Used Apache Kafka for Live Analysis
+Train the model offline and set up queue between the producer(Tweet Streamer) and the Consumer(Predictor) 
+
+#####Disclaimer:
+The work is purely for academic interest and the author in no way supports/endorses the results of the analysis
 
 ###Environment:
 
-  1.Python 2.7.9(tweepy,nltk) _You may need to use nltk.download() to use stopwords etc_.  
+  1.Python 2.7.9(tweepy,nltk)  
   2.spark-2.0.0
+  3.kafka-2.11
 
 ###Resources:
   Used the corpus of positive and negative words from 
@@ -47,16 +53,28 @@ Note:I havent used file writing because of a clash in python 2/3 created problem
   3.Align the features into traing and testing files.Run the align_features_testing.py and align_features_training.py to create a files train.txt and test.txt containing features of the form(class,feature1,feature2,feature3)
   
 
-####Step3:  
-Run the Bayes classifier:Run the NaiveBayes.py in scripts/
-Run the LogisticRegression classifier:Run the LogisticRegression.py in scripts/
+####Step3:Train and save the model,Train the WordVectors  
+Run the LogisticRegression(or NaiveBayes) classifier:Run the LogisticRegression.py in scripts/
+Run the WordVectorTrainer.py which stores the generated Wordvectors in WordTraining.txt
 
-#########Step4
-Load the ML model stored in Step3
-Classify the other twees from DB using PySpark Map-Reduce.Check the spark documentation for submission.I ran them on local using 8 cores 
+######Step4
+Launch kafka from shell:
+		kafka/bin/kafka start-server.sh config/server.properties
+Launch Streamer:
+		python Streamer.py
+Launch Consumer(Also Predictor):
+		spark/bin/spark-submit --packages org.apache.spark:spark-streaming-kafka-0-8_2.11:2.0.2 --master local[8] Predict.py >> output.txt
+
 ####Results:
-Obtained 67.14 % accuracy for Naive_Bayes and 70.2% for LogisticRegression
+Obtained 67.14 % accuracy for Naive Bayes and 70.2% for LogisticRegression
 
+Format of output stored in output.txt in the form (tweet,location,Sentiment).Sample output:
+(u'RT @HuiChenEthics: Another #Trump lie exposed by his own #DOJ; no evidence of wiretapping at Trump Tower. #Resist #Impeach\n\nhttps://t.co/HT\u2026', '', -1)
 
+Most tweets have geodata disabled so the coordinates are empty for most tweets
   
-  
+######Future Work:
+	Geographic visualisation for sentiment-Plot the coordinates on world map and color code the sentiments in a live fashion
+	Improve sentiment analysis.For example:
+	"It's only quiet if we let it be quiet. RT now to make @realDonaldTrump answer for his sabotage." is classified as neutral.
+
