@@ -1,6 +1,8 @@
 #### US_Election_Tweet_Analytics
-Sentiment analysis on Tweets related to US Election and classifying them as Pro-Hillary pro-Trump or neutral
-Used Apache Kafka for Live Analysis
+Sentiment analysis on Tweets related to US Election and classifying them as Pro-Hillary pro-Trump or neutral.
+
+Used Apache Kafka for Live Analysis.
+
 Train the model offline and set up queue between the producer(Tweet Streamer) and the Consumer(Predictor) 
 
 #####Disclaimer:
@@ -8,8 +10,10 @@ The work is purely for academic interest and the author in no way supports/endor
 
 ###Environment:
 
-  1.Python 2.7.9(tweepy,nltk)  
+  1.Python 2.7.9(tweepy,nltk)
+  
   2.spark-2.0.0
+  
   3.kafka-2.11
 
 ###Resources:
@@ -40,11 +44,11 @@ So far only four features have been extracted and three used:
 ####Step 1: Stream Tweets
 
  1.Run the Streamer.py file in scripts.The tweets get stored in JSON format in mongodb.(Setup the mongo config in the file)
+ 
+ They also get published to a Kafka topic during Live Analysis 
   
 
-####Step2: Feature Extraction
-
-Note:I havent used file writing because of a clash in python 2/3 created problems in formatting.So I just redirected the output to the files in resources directory
+####Step2: Feature Extraction(OFFLINE)
 
   1.Run the Analyzer.py file.It uses map-reduce for optimisation.Check the documentation for submission commands
     
@@ -54,7 +58,9 @@ Note:I havent used file writing because of a clash in python 2/3 created problem
   
 
 ####Step3:Train and save the model,Train the WordVectors  
+
 Run the LogisticRegression(or NaiveBayes) classifier:Run the LogisticRegression.py in scripts/
+
 Run the WordVectorTrainer.py which stores the generated Wordvectors in WordTraining.txt
 
 ######Step4
